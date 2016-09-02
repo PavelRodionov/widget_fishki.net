@@ -16,14 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.pavel.rodionov.fishkinet.R;
+import ru.pavel.rodionov.fishkinet.receiver.ListWidgetProvider;
 
 
 public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory{
 
     private static final String URL_SITE = "http://fishki.net";
+    private static final String URL_MSITE = "http://m.fishki.net";
 
-    private List<String> mWidgetTitles = new ArrayList<>();
-    private List<String> mWidgetUrls = new ArrayList<>();
+    private ArrayList<String> mWidgetTitles = new ArrayList<>();
+    private ArrayList<String> mWidgetUrls = new ArrayList<>();
 
     private Context mContext;
 
@@ -45,8 +47,12 @@ public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
 
             for(Element title:titles){
                 Element tagA = title.getElementsByTag("a").first();
-                mWidgetTitles.add(tagA.text());
-                mWidgetUrls.add(tagA.attr("href"));
+
+                String text = tagA.text();
+                String url = URL_MSITE + tagA.attr("href");
+
+                mWidgetTitles.add(text);
+                mWidgetUrls.add(url);
             }
 
         } catch (Exception e) {
@@ -65,6 +71,14 @@ public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
     public RemoteViews getViewAt(int i) {
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
         rv.setTextViewText(R.id.widget_item_title, mWidgetTitles.get(i));
+
+        Bundle extras = new Bundle();
+        extras.putStringArrayList(ListWidgetProvider.EXTRA_URLS,mWidgetUrls);
+        extras.putInt(ListWidgetProvider.EXTRA_POSITION,i);
+        Intent fillIntent = new Intent();
+        fillIntent.putExtras(extras);
+        rv.setOnClickFillInIntent(R.id.widget_item_title,fillIntent);
+
         return rv;
     }
 
