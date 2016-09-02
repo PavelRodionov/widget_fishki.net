@@ -48,9 +48,9 @@ public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
             for(Element title:titles){
                 Element tagA = title.getElementsByTag("a").first();
 
-                String text = tagA.text();
+                String text = tagA.text().equals("") ? "Реклама" : tagA.text();
                 String url = URL_MSITE + tagA.attr("href");
-
+                
                 mWidgetTitles.add(text);
                 mWidgetUrls.add(url);
             }
